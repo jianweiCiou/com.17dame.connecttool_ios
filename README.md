@@ -10,37 +10,25 @@ Your application needs to support :
 -  File > Add Package Dependency
 -  填入 https://github.com/jianweiCiou/com.17dame.connecttool_ios
 -  選擇 ConnectTool
-![image](https://github.com/jianweiCiou/com.17dame.connecttool_ios/blob/main/connectselect.png?raw=true)
+![image](https://github.com/jianweiCiou/com.17dame.connecttool_ios/blob/main/images/connectselect.png?raw=true)
 
-## Setting  
-### Config 
-Info.plist 加入 : 
-```XML
-<key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Viewer</string>
-            <key>CFBundleURLName</key>
-            <string>com.r17dame.connecttool</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>{{ your redirect_uri's scheme }}</string>
-            </array>
-        </dict>
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-        </dict>
-    </array>
-```
+## Setting   
+### 加入 ConnectToolConfig
+- Add ConnectToolConfig.xcconfig to App Project > Configurations > Debug & Release
+![image](https://github.com/jianweiCiou/com.17dame.connecttool_ios/blob/main/images/add_config.png?raw=true)
 
-### ConnectToolConfig
-1. Add ConnectToolConfig.xcconfig to App Project > Configurations > Debug & Release
-2. Info.plist Add 5 keys:  
-```XML
-    <key>RSAstr</key>
-    <string>$(RSAstr)</string>
+- 進 Project 進行配置
+![image](https://github.com/jianweiCiou/com.17dame.connecttool_ios/blob/main/images/set_config.png?raw=true)
+
+- 填入對應資料
+X_Developer_Id = 
+client_secret = 
+redirect_uri = 
+Game_id = 
+
+
+- Info.plist 增加數據
+```XML 
     <key>X_Developer_Id</key>
     <string>$(X_Developer_Id)</string>
     <key>client_secret</key>
