@@ -10,8 +10,7 @@ Your application needs to support :
 -  File > Add Package Dependency
 -  填入 https://github.com/jianweiCiou/com.17dame.connecttool_ios
 -  選擇 ConnectTool
-![image]([picture or gif url](https://github.com/jianweiCiou/com.17dame.connecttool_ios/blob/main/connectselect.png?raw=true))
-
+![image](https://github.com/jianweiCiou/com.17dame.connecttool_ios/blob/main/connectselect.png?raw=true)
 
 ## Setting  
 ### Config 
