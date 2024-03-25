@@ -21,11 +21,12 @@ Your application needs to support :
 ![image](https://github.com/jianweiCiou/com.17dame.connecttool_ios/blob/main/images/set_config.png?raw=true)
 
 - 填入對應資料
+```txt
 X_Developer_Id = 
 client_secret = 
 redirect_uri = 
 Game_id = 
-
+```
 
 - Info.plist 增加數據
 ```XML 
@@ -38,26 +39,11 @@ Game_id =
     <key>Game_id</key>
     <string>$(Game_id)</string>  
 ```
+![image](https://github.com/jianweiCiou/com.17dame.connecttool_ios/blob/main/images/plist.png?raw=true)
 
 
 
-## 
-## NotificationCenter 設定
-
-
-
-## 發行版本切換
-- 測試版 : 
-```swift 
-	self._connectTool?.setToolVersion(_toolVersion: ConnectToolBlack.TOOL_VERSION.testVS); 
-```
-- 正式版 : _connectTool.setToolVersion(ConnectTool.TOOL_VERSION.releaseVS)
-```swift
-	self._connectTool?.setToolVersion(_toolVersion:ConnectToolBlack.TOOL_VERSION.releaseVS);
-```
-
-
-## ViewController 設定
+## ViewController 佈局
 ### ConnectTool 初始
 - 工具初始
 - 設定測試與正式
@@ -161,6 +147,26 @@ override func viewDidLoad() {
     }
 ```
 
+## 發行版本切換
+- 測試版 : 
+```swift 
+	self._connectTool?.setToolVersion(_toolVersion: ConnectToolBlack.TOOL_VERSION.testVS); 
+```
+- 正式版 : _connectTool.setToolVersion(ConnectTool.TOOL_VERSION.releaseVS)
+```swift
+	self._connectTool?.setToolVersion(_toolVersion:ConnectToolBlack.TOOL_VERSION.releaseVS);
+```
+
+ 
+## NotificationCenter 相關設定
+### 
+```swift 
+extension Notification.Name {
+    static var r17dame_ReceiverCallback: Notification.Name {
+        return .init(rawValue: "com.r17dame.CONNECT_ACTION.ReceiverCallback") }
+}
+```
+ 
 
 
 ## 登入 / 註冊 
