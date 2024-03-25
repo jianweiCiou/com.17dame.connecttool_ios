@@ -1,17 +1,14 @@
 # com.17dame.connecttool_ios
-17dame cocos2d connecttool 
+17dame iOS connecttool 
 
 ## Prerequisites
 ### Minimum requirements  
 Your application needs to support :
-- Minimum SDK version 26
-- Android Gradle Plugin Version: 4.0.1
-- Gradle Version : 6.1.1
-- ABI :armeabi-v7a, arm64-v8a
+- Minimum iOS version : 13 
 
 
 
-## AAR 安裝
+##  安裝
 - 下載點:[connecttool-v1.4.0.aar](https://github.com/jianweiCiou/com.17dame.connecttool_android/blob/main/Tutorial/connecttool-v1.4.0.aar)
 - connectcocos\proj.android\app 資料夾中加入 libs , 放入 aar
 - build.gradle 的 dependencies 加入
@@ -25,121 +22,173 @@ Your application needs to support :
     implementation files('libs/connecttool-debug.aar')
 ```
 
-## Setting
-- add BroadcastReceiver:
-```xml
-<!-- 加入 CONNECT_ACTION -->
-<receiver android:name="com.r17dame.connecttool.ConnectToolBroadcastReceiver" android:exported="true">
-    <intent-filter>
-        <action android:name="com.r17dame.CONNECT_ACTION"/>
-    </intent-filter>
-</receiver>
+## Setting  
+### Config 
+Info.plist 加入 : 
+```XML
+<key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
+            <key>CFBundleURLName</key>
+            <string>com.r17dame.connecttool</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>{{ your redirect_uri's scheme }}</string>
+            </array>
+        </dict>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+        </dict>
+    </array>
 ```
+
+### ConnectToolConfig
+1. Add ConnectToolConfig.xcconfig to App Project > Configurations > Debug & Release
+2. Info.plist Add 5 keys:  
+    <key>RSAstr</key>
+    <string>$(RSAstr)</string>
+    <key>X_Developer_Id</key>
+    <string>$(X_Developer_Id)</string>
+    <key>client_secret</key>
+    <string>$(client_secret)</string>
+    <key>redirect_uri</key>
+    <string>$(redirect_uri)</string>
+    <key>Game_id</key>
+    <string>$(Game_id)</string>  
+
+
+## 
+## NotificationCenter 設定
+
+
 
 ## 發行版本切換
-- 測試版 : _connectTool.setToolVersion(ConnectTool.TOOL_VERSION.testVS)
+- 測試版 : 
+```swift 
+	self._connectTool?.setToolVersion(_toolVersion: ConnectToolBlack.TOOL_VERSION.testVS); 
+```
 - 正式版 : _connectTool.setToolVersion(ConnectTool.TOOL_VERSION.releaseVS)
+```swift
+	self._connectTool?.setToolVersion(_toolVersion:ConnectToolBlack.TOOL_VERSION.releaseVS);
+```
 
 
-## Cocos2dxActivity 設定
-### 參數
-```java
-    // 取得網頁事件回應
-    private ConnectToolBroadcastReceiver connectReceiver;
-    // Cocos2d 呼應實體
-    private static AppActivity connect17dameActivity;
-    // 17 dame 工具
-    ConnectTool _connectTool;
-    private final static String TAG = "ConnectTool test";
-    IntentFilter itFilter;
-```
-### onCreate 初始
-- tool 初始 : [說明](https://github.com/jianweiCiou/com.17dame.connecttool_android/blob/main/README.md#connecttool-function)
-- 版本 : 
-```java
-_connectTool.setPlatformVersion(ConnectTool.PLATFORM_VERSION.cocos2dVS);
-_connectTool.setToolVersion(ConnectTool.TOOL_VERSION.testVS);
-```
-- 網頁與 BroadcastReceiver
-```java
-	// 設定 17dame 網頁
-        _connectTool.connectCocos_webLayout = new FrameLayout(this);
-        addContentView(_connectTool.connectCocos_webLayout, _connectTool.getFrameLayoutParams());
-
-        // Init 17dame registerReceiver
-        itFilter = new IntentFilter();
-        itFilter.addAction("com.r17dame.CONNECT_ACTION");
-        connectReceiver = new ConnectToolBroadcastReceiver();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            // 修正 Android 14+ 的廣播註冊
-            this.registerReceiver(connectReceiver, itFilter, RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(connectReceiver, itFilter);
-        }
-```
-- '登入完成', '儲值完成', '消費完成'相關事件的回應
-```java
-connectReceiver.registerCallback(new ConnectToolBroadcastReceiver.ConnectToolReceiverCallback() {
-            @Override
-            public void connectToolPageBack(Intent intent, String accountBackType) {
-                String backType = intent.getStringExtra("accountBackType"); 
-                if (backType.equals("CompletePurchase")) {
-                    _connectTool.appLinkDataCallBack_CompletePurchase(intent, value -> {
-                         儲值完成
-                    });
-                } 
-                // Complete consumption of SP Coin
-                if (backType.equals("CompleteConsumeSP")) {
-                    UUID queryConsumeSP_requestNumber = UUID.randomUUID(); // App-side-RequestNumber(UUID), default random
-                    // consume_transactionId
-                    _connectTool.appLinkDataCallBack_CompleteConsumeSP(intent, queryConsumeSP_requestNumber, value -> {
-                         消費完成
-                    });
-                }
-
-                // get Access token
-                if (backType.equals("Authorize")) {
-                    UUID GetMe_RequestNumber = UUID.randomUUID(); // App-side-RequestNumber(UUID), default random
-                    String state = "App-side-State";
-                    _connectTool.appLinkDataCallBack_OpenAuthorize(intent, state, GetMe_RequestNumber, value -> {
-                        登入完成
-                    });
-                }
-            }
-        }); 
-```
-- 取消 Connect Receiver
-```java
-@Override
-    public void onDestroy() {
-        super.onDestroy();
-        // region ****************** 17dame tool ********************************
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            // 修正 Android 14+ 的廣播註冊
-            this.registerReceiver(connectReceiver, itFilter, RECEIVER_EXPORTED);
-        } else {
-            unregisterReceiver(connectReceiver);
-        }
-        // endregion ****************** 17dame tool ********************************
+## ViewController 設定
+### ConnectTool 初始
+- 工具初始
+- 設定測試與正式
+- 註冊 17dame NotificationCenter 應用事件
+```swift
+import ConnectTool
+override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view.
+        
+        // 工具初始
+        let RSAstr = "...";
+        
+        let X_Developer_Id = Bundle.main.infoDictionary?["X_Developer_Id"]
+        let client_secret = Bundle.main.infoDictionary?["client_secret"]
+        let redirect_uri = Bundle.main.infoDictionary?["redirect_uri"]
+        let Game_id = Bundle.main.infoDictionary?["Game_id"]
+        
+        self._connectTool = ConnectToolBlack(_redirect_uri : redirect_uri as! String,
+                                             _RSAstr : RSAstr,
+                                             _client_id : X_Developer_Id as! String,
+                                             _X_Developer_Id : X_Developer_Id as! String,
+                                             _client_secret : client_secret as! String,
+                                             _Game_id : Game_id as! String,
+                                             _platformVersion: ConnectToolBlack.PLATFORM_VERSION.nativeVS );
+        
+        // 設定測試與正式
+        self._connectTool?.setToolVersion(_toolVersion: ConnectToolBlack.TOOL_VERSION.testVS);
+        //self._connectTool?.setToolVersion(_toolVersion:ConnectToolBlack.TOOL_VERSION.releaseVS);
+        
+        // 註冊 17dame 應用事件
+        NotificationCenter.default.addObserver(self, selector: #selector(r17dame_ReceiverCallback),name: NSNotification.Name .r17dame_ReceiverCallback, object: nil)
     }
 ```
 
+- 移除 17dame 應用事件的訂閱 
+```swift
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.r17dame_ReceiverCallback, object: nil)
+    }
+```
+- 17dame 應用事件回應 : 完成登入, 完成註冊, 完成儲值, 完成消費
+```swift
+    d@objc func r17dame_ReceiverCallback(_ notification: Notification){
+        let backType = notification.userInfo?["accountBackType"]  as! String;
+        
+        // Complete purchase of SP Coin
+        if (backType  ==  "CompletePurchase") {
+            let TradeNo = notification.userInfo?["TradeNo"]  as! String;
+            let PurchaseOrderId = notification.userInfo?["PurchaseOrderId"]  as! String;
+            
+            print("完成儲值 ")
+            print("TradeNo : " +  TradeNo)
+            print("PurchaseOrderId : " +  PurchaseOrderId)
+        }
+        
+        // Complete consumption of SP Coin
+        if (backType  ==  "CompleteConsumeSP") {
+            let consume_status = notification.userInfo?["consume_status"]  as! String;
+            let transactionId = notification.userInfo?["transactionId"]  as! String;
+            let orderNo = notification.userInfo?["orderNo"]  as! String;
+            let productName = notification.userInfo?["productName"]  as! String;
+            let spCoin = notification.userInfo?["spCoin"]  as! Int;
+            let rebate = notification.userInfo?["rebate"]  as! Int;
+            let orderStatus = notification.userInfo?["orderStatus"]  as! String;
+            let state = notification.userInfo?["state"]  as! String;
+            let notifyUrl = notification.userInfo?["notifyUrl"]  as! String;
+            
+            print("完成消費 ")
+            print("consume_status : " +  consume_status)
+            print("transactionId : " +  transactionId)
+            print("orderNo : " +  orderNo)
+            print("productName : " +  productName)
+            print("spCoin : \(spCoin)"   )
+            print("rebate : \(rebate)"   )
+            print("orderStatus : " +  orderStatus)
+            print("state : " +  state)
+            print("notifyUrl : " +  notifyUrl)
+        }
+        
+        // get Access token
+        if(backType == "Authorize"){
+            let GetMe_RequestNumber = UUID();
+            let state = "App-side-State";
+            _connectTool?.appLinkDataCallBack_OpenAuthorize(
+                notification:notification,
+                _state:state,
+                GetMe_RequestNumber:GetMe_RequestNumber
+            ){
+                /*
+                 * App-side add functions.
+                 */
+                auth in
+                print("Authorize 回應")
+                print("userId : " + auth.meInfo.data.userId)
+                print("email : " + auth.meInfo.data.email)
+                print("spCoin : \(auth.meInfo.data.spCoin)")
+                print("rebate : \(auth.meInfo.data.rebate)")
+            }
+        }
+    }
+```
+
+
+
 ## 登入 / 註冊 
 ### 呼叫範例
-```cpp
-JniMethodInfo minfo;
-bool isHave = JniHelper::getStaticMethodInfo(minfo, "org/cocos2dx/cpp/AppActivity", "getConnect17dameInstance", "()Lorg/cocos2dx/cpp/AppActivity;");
-jobject jobj;
-if (isHave) { 
-  		jobj = minfo.env->CallStaticObjectMethod(minfo.classID, minfo.methodID);
-  		isHave = JniHelper::getMethodInfo(minfo, "org/cocos2dx/cpp/AppActivity", "openLoginWebview", "(Ljava/lang/String;)V");
-    
-  		if (isHave) {
-        //  
-        jstring jState = minfo.env->NewStringUTF("App-side-State"); 
-  			minfo.env->CallVoidMethod(jobj, minfo.methodID, jState);
-  		}
-} 
+```swift 
+    @IBAction func OpenAuthorizeURL(_: Any) {
+        let state:String = "App-side-State";
+        self._connectTool?.OpenAuthorizeURL(_state: state,rootVC: self)
+    }
 ```
 - state : 請填寫要驗證的內容
 ### 參考
@@ -149,39 +198,38 @@ if (isHave) {
 
 ## 取得用戶資訊 
 ### 呼叫範例
-```cpp
-JniMethodInfo minfo;
-bool isHave = JniHelper::getStaticMethodInfo(minfo, "org/cocos2dx/cpp/AppActivity", "getConnect17dameInstance", "()Lorg/cocos2dx/cpp/AppActivity;");
-jobject jobj;
-if (isHave) {
-	jobj = minfo.env->CallStaticObjectMethod(minfo.classID, minfo.methodID);
-	isHave = JniHelper::getMethodInfo(minfo, "org/cocos2dx/cpp/AppActivity", "GetMeInfo", "()V");
-
-	if (isHave) {
-		minfo.env->CallVoidMethod(jobj, minfo.methodID);
-	}
-}
+```cpp 
+    @IBAction func GetMe_Coroutine(_: Any) {
+        let GetMe_RequestNumber = UUID(); // App-side-RequestNumber(UUID), default random
+        _connectTool?.GetMe_Coroutine(_GetMeRequestNumber: GetMe_RequestNumber, callback: { MeInfo in
+            print("取用戶登入資料")
+            print("userId : " + MeInfo.data.userId)
+            print("email : " + MeInfo.data.email)
+            print("nickName : " + (MeInfo.data.nickName ?? ""))
+            print("spCoin : \(MeInfo.data.spCoin)")
+            print("rebate : \(MeInfo.data.rebate)")
+            print("avatarUrl : " + (MeInfo.data.avatarUrl ?? ""))
+        })
+    }
 ```
 - [用戶資訊格式](https://github.com/jianweiCiou/com.17dame.connecttool_android/tree/main?tab=readme-ov-file#openauthorizeurl)
 
 
 ## 儲值 SP
 ### 呼叫範例
-```cpp
-JniMethodInfo minfo;
-bool isHave = JniHelper::getStaticMethodInfo(minfo, "org/cocos2dx/cpp/AppActivity", "getConnect17dameInstance", "()Lorg/cocos2dx/cpp/AppActivity;");
-jobject jobj;
-if (isHave) {
-    jobj = minfo.env->CallStaticObjectMethod(minfo.classID, minfo.methodID);
-    isHave = JniHelper::getMethodInfo(minfo, "org/cocos2dx/cpp/AppActivity", "openRechargeSPWebview", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
-    if (isHave) {  
-        jstring currencyCode = minfo.env->NewStringUTF("2"); // TWD
-        jstring notifyUrl = minfo.env->NewStringUTF(""); // notifyUrl 
-        jstring state = minfo.env->NewStringUTF("Custom state"); 
-         
-        minfo.env->CallVoidMethod(jobj, minfo.methodID, currencyCode, notifyUrl, state);
+```swift
+@IBAction func OpenRechargeURL(_: Any) {
+        let notifyUrl = "";// NotifyUrl is a URL customized by the game developer
+        let state = "Custom state";// Custom state
+        
+        _connectTool?.set_purchase_notifyData(notifyUrl:notifyUrl,state:state);
+        
+        // Step2. Set currencyCode
+        let currencyCode = "2";
+        
+        // Step3. Open Recharge Page
+        _connectTool?.OpenRechargeURL(currencyCode:currencyCode,_notifyUrl: notifyUrl,state: state,rootVC: self);
     }
-}
 ```
 - currencyCode : 目前 TWD 帶入 2 ([幣種對照](https://github.com/jianweiCiou/com.17dame.connecttool_android/tree/main?tab=readme-ov-file#currency-code))
 - notifyUrl : 遊戲開發者自訂的 URL ([Notifyurl 說明](https://github.com/jianweiCiou/com.17dame.connecttool_android/tree/main?tab=readme-ov-file#notifyurl--state))
@@ -197,25 +245,20 @@ if (isHave) {
 
 ## 消費 SP
 ### 呼叫範例
-```cpp
- JniMethodInfo minfo;
- bool isHave = JniHelper::getStaticMethodInfo(minfo, "org/cocos2dx/cpp/AppActivity", "getConnect17dameInstance", "()Lorg/cocos2dx/cpp/AppActivity;");
- jobject jobj;
- if (isHave) {
-     jobj = minfo.env->CallStaticObjectMethod(minfo.classID, minfo.methodID);
-     isHave = JniHelper::getMethodInfo(minfo, "org/cocos2dx/cpp/AppActivity", "openConsumeSPWebview", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
-     if (isHave) {
-         jint consume_spCoin = 10;  
-         jstring orderNo = minfo.env->NewStringUTF(""); 
-         jstring productName = minfo.env->NewStringUTF("productName"); 
-         jstring GameName = minfo.env->NewStringUTF("GameName");  
-         jstring notifyUrl = minfo.env->NewStringUTF("");  
-         jstring state  = minfo.env->NewStringUTF("state");
-         jstring requestNumber = minfo.env->NewStringUTF("91f039df-eb20-4682-a56c-4ccb7c37db16");
-          
-         minfo.env->CallVoidMethod(jobj, minfo.methodID, consume_spCoin, orderNo, GameName, productName, notifyUrl, state, requestNumber);
-     }
- }
+```swift
+@IBAction func OpenConsumeSPURL(_: Any) {
+        let notifyUrl = "";// NotifyUrl is a URL customized by the game developer
+        let state = UUID().uuidString; // Custom state , default random_connectTool.set_purchase_notifyData(notifyUrl, state);
+        
+        _connectTool?.set_purchase_notifyData(notifyUrl:notifyUrl,state:state);
+        
+        let  consume_spCoin = 10;
+        let orderNo = UUID().uuidString; // orderNo is customized by the game developer
+        let requestNumber = UUID().uuidString; // requestNumber is customized by the game developer, default random
+        let GameName = "GameName";
+        let productName = "productName";
+        _connectTool?.OpenConsumeSPURL(consume_spCoin: consume_spCoin, orderNo: orderNo, GameName: GameName, productName: productName, _notifyUrl: notifyUrl, state: state, requestNumber: requestNumber,rootVC: self);
+    }
 ```
 - consume_spCoin : 商品定價
 - orderNo : 遊戲開發者自訂的 OrderNo, String 格式
