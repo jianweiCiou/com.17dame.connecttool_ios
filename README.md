@@ -48,6 +48,7 @@ Info.plist 加入 :
 ### ConnectToolConfig
 1. Add ConnectToolConfig.xcconfig to App Project > Configurations > Debug & Release
 2. Info.plist Add 5 keys:  
+```XML
     <key>RSAstr</key>
     <string>$(RSAstr)</string>
     <key>X_Developer_Id</key>
@@ -58,6 +59,8 @@ Info.plist 加入 :
     <string>$(redirect_uri)</string>
     <key>Game_id</key>
     <string>$(Game_id)</string>  
+```
+
 
 
 ## 
