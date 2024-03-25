@@ -6,22 +6,6 @@
 Your application needs to support :
 - Minimum iOS version : 13 
 
-
-
-##  安裝
-- 下載點:[connecttool-v1.4.0.aar](https://github.com/jianweiCiou/com.17dame.connecttool_android/blob/main/Tutorial/connecttool-v1.4.0.aar)
-- connectcocos\proj.android\app 資料夾中加入 libs , 放入 aar
-- build.gradle 的 dependencies 加入
-```
-    // ConnectTool http request
-    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
-    implementation 'com.squareup.okhttp3:okhttp:3.4.1'
-    // 使用 aar
-    implementation files('libs/connecttool-debug.aar')
-```
-
 ## Setting  
 ### Config 
 Info.plist 加入 : 
