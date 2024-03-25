@@ -11,34 +11,15 @@ import WebKit
 
 @available(iOS 13.0, *)
 class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDelegate, WKUIDelegate {
-    
-    
+     
     // 頁面功能
     let sendFinish_funcName = "sendFinish"
-    
-    //    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-    //
-    //    }
-    
-    //    @IBOutlet weak var mBackBtn: UIButton!
-    //    @IBOutlet weak var mForwardBtn: UIButton!
-    
-    
+      
     lazy var webView: WKWebView = {
-        // Set localStorage
-        //                        String RSAstr = pref.getString(String.valueOf(R.string.RSAstr), "");
-        //                        String _me = pref.getString(String.valueOf(R.string.me), "");
-        //                        String _access_token = pref.getString(String.valueOf(R.string.access_token), "");
-        //                        String ClientID = pref.getString(String.valueOf(R.string.X_Developer_Id), "");
-        //                        String Secret = pref.getString(String.valueOf(R.string.client_secret), "");
-        //                        String requestNumber = pref.getString(String.valueOf(R.string.requestNumber), "");
-        //                        String redirect_uri = pref.getString(String.valueOf(R.string.redirect_uri), "");
-        
         
         let preferences = WKPreferences()
         preferences.javaScriptEnabled = true
         
-        // configuration
         // configuration
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = WKUserContentController()
@@ -79,9 +60,7 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
         configuration.userContentController.addUserScript(script)
         configuration.userContentController.add(self, name: "iosListener")
         //************************************************************************
-        
          
-        
         let wv = WKWebView(frame: self.view.frame, configuration: configuration)
         wv.configuration.preferences = preferences
         wv.uiDelegate = self
@@ -124,23 +103,24 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
     
     private func addNavigationBar() {
         let height: CGFloat = 45
-        let statusBarHeight: CGFloat = 40
-         
-//        statusBarHeight = UIApplication.shared.statusBarFrame.height
+        let statusBarHeight: CGFloat = 45
+
         let navbar = UINavigationBar(frame: CGRect(x: 0, y: statusBarHeight, width: UIScreen.main.bounds.width, height: height))
         navbar.backgroundColor = UIColor.white
         navbar.delegate = self
-         
-        
+
+
         let navItem = UINavigationItem()
         navItem.title = ""
         navItem.leftBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(dismissViewController))
-        
+
         navbar.items = [navItem]
-        
+
         view.addSubview(navbar)
-        
+
         self.view?.frame = CGRect(x: 0, y: height, width: UIScreen.main.bounds.width, height: (UIScreen.main.bounds.height - height))
+          
+        
     }
     
     @objc func dismissViewController(_ sender: UIBarButtonItem) {
@@ -150,12 +130,45 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
     private func setupViews() {
         view.backgroundColor = .white
         view.addSubview(webView)
+        webView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 38),
+            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 45),
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             webView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+        
+//        let newView = UIView()
+//                self.view.addSubview(newView)
+//                newView.translatesAutoresizingMaskIntoConstraints = false
+//                if #available(iOS 11.0, *) {
+//                    let guide = self.view.safeAreaLayoutGuide
+//                    newView.trailingAnchor.constraint(equalTo: guide.trailingAnchor).isActive = true
+//                    newView.leadingAnchor.constraint(equalTo: guide.leadingAnchor).isActive = true
+//                    newView.topAnchor.constraint(equalTo: guide.topAnchor).isActive = true
+//                    newView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+//                } else {
+//                    NSLayoutConstraint(item: newView,
+//                                       attribute: .top,
+//                                       relatedBy: .equal,
+//                                       toItem: view, attribute: .top,
+//                                       multiplier: 1.0, constant: 0).isActive = true
+//                    NSLayoutConstraint(item: newView,
+//                                       attribute: .leading,
+//                                       relatedBy: .equal, toItem: view,
+//                                       attribute: .leading,
+//                                       multiplier: 1.0,
+//                                       constant: 0).isActive = true
+//                    NSLayoutConstraint(item: newView, attribute: .trailing,
+//                                       relatedBy: .equal,
+//                                       toItem: view,
+//                                       attribute: .trailing,
+//                                       multiplier: 1.0,
+//                                       constant: 0).isActive = true
+//
+//                        newView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+//                }
+        
     }
     
     /**
