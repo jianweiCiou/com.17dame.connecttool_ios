@@ -4,7 +4,14 @@
 ## Prerequisites
 ### Minimum requirements  
 Your application needs to support :
-- Minimum iOS version : 13 
+- Minimum iOS version : 13
+
+## 安裝
+-  File > Add Package Dependency
+-  填入 https://github.com/jianweiCiou/com.17dame.connecttool_ios
+-  選擇 ConnectTool
+![image]([picture or gif url](https://github.com/jianweiCiou/com.17dame.connecttool_ios/blob/main/connectselect.png?raw=true))
+
 
 ## Setting  
 ### Config 
