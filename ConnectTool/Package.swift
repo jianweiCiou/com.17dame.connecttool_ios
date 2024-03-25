@@ -17,18 +17,9 @@ let package = Package(
             targets: ["ObjCConnectTool","ConnectTool"]
         ),
     ],
-    dependencies: [
-//        .package(url: "https://github.com/krzyzanowskim/OpenSSL.git", .upToNextMinor(from: "3.1.4000")),
-        // other dependencies
-        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
+    dependencies: [ 
     ],
     targets: [
-        
-//        .target(
-//            name: "cxxLibrary"),
-//        .executableTarget(
-//            name: "ConnectTool",
-//            dependencies: ["cxxLibrary"]), 
         .target(
             name: "cxxLibrary"),
         .target(

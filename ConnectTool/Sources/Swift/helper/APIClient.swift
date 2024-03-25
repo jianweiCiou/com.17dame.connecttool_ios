@@ -142,12 +142,7 @@ class APIClient{
         guard let privateKey = SecKeyCreateWithData(derData as CFData, attributes as CFDictionary, &error) else {
             throw error!.takeUnretainedValue()
         }
-        
-        // Instead of creating the hash yourself, let the security framework do it for you
-        // by using the rsaSignatureMessagePKCS1v15SHA256 algorithm. Alternatively you could
-        // use rsaSignatureMessagePSSSHA256, as PSS is a better algorithm.
-        
-        // Make sure the key supports signing with the algorithm
+         
         guard SecKeyIsAlgorithmSupported(privateKey, .sign, .rsaSignatureMessagePKCS1v15SHA256) else {
             return nil
         }
@@ -180,15 +175,12 @@ class APIClient{
             
             let config = URLSessionConfiguration.default
             let session = URLSession(configuration: config)
-            // vs let session = URLSession.shared
+            
             // make the request
             let task = session.dataTask(with: request, completionHandler: {
                 (data, response, error) in
-                
-                
-                
-                DispatchQueue.main.async { // Correct
-                    
+                 
+                DispatchQueue.main.async {
                     guard let responseData = data else {
                         return
                     }

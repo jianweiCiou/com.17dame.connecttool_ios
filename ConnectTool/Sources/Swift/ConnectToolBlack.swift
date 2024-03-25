@@ -5,7 +5,7 @@ import WebKit
 import SwiftUI
 import ObjCConnectTool
 import cxxLibrary
- 
+
 public class ConnectToolBlack {
     
     /// Tool 版本, 分測試與發行
@@ -79,7 +79,6 @@ public class ConnectToolBlack {
     ///   - _client_secret: 單位密鑰
     ///   - _Game_id: 遊戲 id
     ///   - _toolVersion: 遊戲 id
-    ///   - _toolVersion Tool 版本, 分測試與發行   
     ///   - _platformVersion: 平台版本
     public init(_redirect_uri: String,
                 _RSAstr: String,
@@ -87,9 +86,11 @@ public class ConnectToolBlack {
                 _X_Developer_Id : String,
                 _client_secret : String,
                 _Game_id : String,
-                _toolVersion:TOOL_VERSION,
                 _platformVersion:PLATFORM_VERSION )
     {
+        // 預設為測試
+        let _toolVersion = TOOL_VERSION.testVS;
+        
         payMethod = "1"
         
         payMentBaseurl = "https://gamar18portal.azurewebsites.net"
@@ -108,7 +109,7 @@ public class ConnectToolBlack {
         ConnectToolBlack.toolVersion = _toolVersion
         ConnectToolBlack.platformVersion = _platformVersion
         
-        if(ConnectToolBlack.toolVersion == TOOL_VERSION.testVS){
+        if(_toolVersion == TOOL_VERSION.testVS){
             APIClient.host = "gamar18portal.azurewebsites.net"
         }else{
             APIClient.host = "17dame.com"
@@ -121,7 +122,7 @@ public class ConnectToolBlack {
             Game_id:_Game_id,
             referralCode:ConnectToolBlack.referralCode
         )
-          
+        
         // init
         ConnectToolBlack.redirect_uri = "https://" + APIClient.host + "/Account/connectlink";
         ConnectToolBlack.RSAstr = _RSAstr
@@ -131,7 +132,7 @@ public class ConnectToolBlack {
         ConnectToolBlack.requestNumber = UUID().uuidString
         ConnectToolBlack.Secret = _client_secret
     }
-     
+    
     /// 設定平台 native or cocos2d
     /// - Parameters:
     ///   - _platformVersion: 原生或遊戲
@@ -139,7 +140,7 @@ public class ConnectToolBlack {
         ConnectToolBlack.platformVersion = _platformVersion;
     }
     
-     
+    
     /// 設定發行板或是測試版
     /// - Parameters:
     ///   - _toolVersion:  版本
@@ -157,6 +158,10 @@ public class ConnectToolBlack {
         }
     }
     
+    /// 開啟登入與註冊頁面
+    /// - Parameters:
+    ///   - _state:  state
+    ///   - rootVC:  state
     public func OpenAuthorizeURL( _state:String,rootVC: UIViewController) {
         var components = URLComponents()
         components.scheme = "https"
@@ -243,7 +248,7 @@ public class ConnectToolBlack {
         
         return components.url!
     }
-     
+    
     /**
      * Open ConsumeSP page.
      *
@@ -268,7 +273,7 @@ public class ConnectToolBlack {
         let url = getConsumeSPURL(  consume_spCoin: consume_spCoin, orderNo: orderNo, GameName: GameName, productName: productName, _notifyUrl: _notifyUrl, state: state, requestNumber: requestNumber);
         ConnectToolBlack.requestNumber = requestNumber
         ConnectToolBlack.notifyUrl = _notifyUrl
-         
+        
         if (isOverExpiresTs()) {
             // token 到期
             GetRefreshToken_Coroutine(){ token in
@@ -337,7 +342,7 @@ public class ConnectToolBlack {
     public  func appLinkDataCallBack_OpenAuthorize(notification: Notification,  _state:String,  GetMe_RequestNumber:UUID,with authCallback:@escaping (AuthorizeInfo) -> Void )
     {
         let code = notification.userInfo?["code"]  as! String;
-         
+        
         
         GetConnectToken_Coroutine(_code:code){ _connectToken in
             let _access_token = _connectToken.access_token;
@@ -346,8 +351,8 @@ public class ConnectToolBlack {
             self.GetMe_Coroutine(_GetMeRequestNumber: GetMe_RequestNumber)
             {me in
                 self.isRunAuthorize = false;
-                 
-                let _auth = AuthorizeInfo(meInfo: me, connectToken: _connectToken, state: _state, access_token: _access_token); 
+                
+                let _auth = AuthorizeInfo(meInfo: me, connectToken: _connectToken, state: _state, access_token: _access_token);
                 
                 authCallback(_auth);
             };
@@ -383,14 +388,9 @@ public class ConnectToolBlack {
      * @see <a href="https://github.com/jianweiCiou/com.17dame.connecttool_android/blob/main/README.md#query-consumesp-by-transactionid">說明</a>
      */
     public func GetMe_Coroutine( _GetMeRequestNumber:UUID, callback: @escaping (MeInfo) -> Void){
-         
-//        if (!_checkConstructorParametersComplete()) {
-//            return;
-//        }
         if (isOverExpiresTs()) {
             // 無 token
             // token 到期
-            print("token 到期")
             GetRefreshToken_Coroutine(){ token in
                 self.getMeData(_GetMeRequestNumber:_GetMeRequestNumber){
                     me in
@@ -398,7 +398,6 @@ public class ConnectToolBlack {
                 };
             }
         } else {
-            print("取 getMeData")
             getMeData(_GetMeRequestNumber:_GetMeRequestNumber){
                 me in
                 callback(me)
@@ -409,7 +408,7 @@ public class ConnectToolBlack {
     // APIClient
     public func getMeData( _GetMeRequestNumber:UUID,
                            callbackMeInfo: @escaping (MeInfo) -> Void){
-         
+        
         APIClient.getMe(_connectToolBlack: self,   X_Developer_Id: self.connectBasic.X_Developer_Id, RequestNumber: _GetMeRequestNumber.uuidString , GameId: self.connectBasic.Game_id, ReferralCode: ConnectToolBlack.referralCode) { me in
             callbackMeInfo(me)
         }
@@ -449,27 +448,6 @@ public class ConnectToolBlack {
         }
     }
     
-//    public func appLinkDataCallBack_CompletePurchase(Intent intent, PurchaseOrderCallback appLinkcallback) {
-//            if (isRunCompleteCompletePurchase.equals(false)) {
-//                isRunCompleteCompletePurchase = true;
-//                String TradeNo = intent.getStringExtra("TradeNo");
-//                // Complete purchase of SP Coin
-//                // 取得購買 SPCoin 資料
-//                try {
-//                    GetPurchaseOrderOne(value -> {
-//                        isRunCompleteCompletePurchase = false;
-//                        Log.v(TAG, "PurchaseOrderOneResponse callback : " + value);
-//                        appLinkcallback.callback(value);
-//                        return value;
-//                    }, TradeNo);
-//                } catch (NoSuchAlgorithmException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//        }
-    
-    
-    
     private func openhostPage(url:URL,rootVC: UIViewController ) {
         self.rootVC = rootVC
         rootVC.present(onboardingViewController, animated: true, completion: nil)
@@ -489,7 +467,7 @@ public class ConnectToolBlack {
             
             let currentTs = NSDate().timeIntervalSince1970 / 1000;
             let currentTsDouble = Double(currentTs);
-             
+            
             if (currentTsDouble > expiresTsDouble) {
                 return true;
             } else {
@@ -520,12 +498,12 @@ public class ConnectToolBlack {
 }
 
 extension UIViewController {
-
-    var isModal: Bool { 
+    
+    var isModal: Bool {
         let presentingIsModal = presentingViewController != nil
         let presentingIsNavigation = navigationController?.presentingViewController?.presentedViewController == navigationController
         let presentingIsTabBar = tabBarController?.presentingViewController is UITabBarController
-
+        
         return presentingIsModal || presentingIsNavigation || presentingIsTabBar
     }
 }

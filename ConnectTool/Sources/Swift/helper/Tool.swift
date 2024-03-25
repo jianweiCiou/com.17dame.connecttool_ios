@@ -38,8 +38,8 @@ class Tool  {
         Configuration.value(value: "", forKey:"access_token")
         Configuration.value(value: "", forKey:"refresh_token")
     }
-    
-    
+     
+    /// 取時間格式
     public static func getTimestamp() -> String{
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"

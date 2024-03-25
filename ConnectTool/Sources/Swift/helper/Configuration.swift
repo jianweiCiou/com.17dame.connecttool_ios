@@ -7,8 +7,7 @@
 
 import Foundation
 
-class Configuration {
-    /// 取出 UserDefault 數據
+class Configuration { 
     static func value<T>(defaultValue: T, forKey key: String) -> T{
         let preferences = UserDefaults.standard
         return preferences.object(forKey: key) == nil ? defaultValue : preferences.object(forKey: key) as! T

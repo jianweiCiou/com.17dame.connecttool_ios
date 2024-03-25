@@ -124,13 +124,13 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
     
     private func addNavigationBar() {
         let height: CGFloat = 45
-        var statusBarHeight: CGFloat = 0
-        
+        let statusBarHeight: CGFloat = 40
+         
 //        statusBarHeight = UIApplication.shared.statusBarFrame.height
         let navbar = UINavigationBar(frame: CGRect(x: 0, y: statusBarHeight, width: UIScreen.main.bounds.width, height: height))
         navbar.backgroundColor = UIColor.white
-        navbar.delegate = self 
-        
+        navbar.delegate = self
+         
         
         let navItem = UINavigationItem()
         navItem.title = ""
@@ -151,7 +151,7 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
         view.backgroundColor = .white
         view.addSubview(webView)
         NSLayoutConstraint.activate([
-            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 38),
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             webView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
@@ -180,7 +180,6 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
             if((accountBackType ?? "").isEmpty == false){
                 // auth
                 if (accountBackType == "Register") {
-                    print("註冊回應")
                     let backTypeResponse = ["accountBackType":"Register" ]
                     NotificationCenter.default.post(name: NSNotification.Name.r17dame_ReceiverCallback,object: nil, userInfo:backTypeResponse as [AnyHashable : Any])
                     
@@ -202,17 +201,6 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
                 finishWebPage()
             }
         }
-        
-//        // Oauth 回應
-//        // 檢查 query key
-//        if (observeValueURL.contains("Account/connectlink")) {
-//            if let urlComponents = URL(string: url)?.components,
-//               let code = urlComponents.queryItems?["code"] {
-//                
-//                let backTypeResponse = ["accountBackType":"Authorize","code":code]
-//                NotificationCenter.default.post(name: NSNotification.Name.r17dame_ReceiverCallback,object: nil, userInfo:backTypeResponse as [AnyHashable : Any])
-//            }
-//        }
     }
     
     
@@ -257,7 +245,7 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
         
         let url = String(describing: webView.url)
         
-        print("didFinish + " + url)
+//        print("didFinish + " + url)
         
         // 輸入 localStorage
         let access_token = Configuration.value(defaultValue: "", forKey:"access_token")
