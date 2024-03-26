@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 struct ContentView: View {
     @StateObject var webViewModel = WebViewModel(url: "")
     
@@ -23,7 +23,7 @@ struct ContentView: View {
 }
 
 #if DEBUG
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 struct ContentView_Previews :
     PreviewProvider {
     static var previews :some View {

@@ -9,7 +9,7 @@
 import WebKit
 
 
-@available(iOS 13.0, *)
+@available(iOS 14.0, *)
 class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDelegate, WKUIDelegate {
      
     // 頁面功能
