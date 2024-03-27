@@ -18,10 +18,14 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
     lazy var webView: WKWebView = {
         
         let preferences = WKPreferences()
-        preferences.javaScriptEnabled = true
+//        preferences.javaScriptEnabled = true
+        
+        let pres = WKWebpagePreferences()
+        pres.allowsContentJavaScript = true
         
         // configuration
         let configuration = WKWebViewConfiguration()
+        configuration.defaultWebpagePreferences = pres
         configuration.userContentController = WKUserContentController()
         configuration.userContentController.add(self, name: "iOS17dame")
         configuration.userContentController.add(self, name: "sendFinish")
@@ -61,7 +65,7 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
         configuration.userContentController.add(self, name: "iosListener")
         //************************************************************************
          
-        let wv = WKWebView(frame: self.view.frame, configuration: configuration)
+        let wv = WKWebView(frame: self.view.frame , configuration: configuration)
         wv.configuration.preferences = preferences
         wv.uiDelegate = self
         wv.navigationDelegate = self
@@ -69,6 +73,7 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
         
         // Add observer
         wv.addObserver(self, forKeyPath: "URL", options: .new, context: nil)
+         
         
         return wv
     }()
@@ -89,13 +94,18 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
          
         self.webView.navigationDelegate = self
          
+//        let screenSize: CGRect = UIScreen.main.bounds
+//            let myView = UIView(frame: CGRect(x: 0, y: 72, width: screenSize.width, height: screenSize.height-72))
+//            self.view.addSubview(myView)
+            
+        
         addNavigationBar()
     }
     
     // 開頁面
     public func openURLPage(url:URL ) {
-        let preferences = WKPreferences()
-        preferences.javaScriptEnabled = true
+//        let preferences = WKPreferences()
+//        preferences.javaScriptEnabled = true
         
         let request = URLRequest(url: url)
         self.webView.load(request)
@@ -109,18 +119,14 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
         navbar.backgroundColor = UIColor.white
         navbar.delegate = self
 
-
         let navItem = UINavigationItem()
         navItem.title = ""
         navItem.leftBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(dismissViewController))
 
         navbar.items = [navItem]
-
         view.addSubview(navbar)
 
         self.view?.frame = CGRect(x: 0, y: height, width: UIScreen.main.bounds.width, height: (UIScreen.main.bounds.height - height))
-          
-        
     }
     
     @objc func dismissViewController(_ sender: UIBarButtonItem) {
@@ -132,11 +138,13 @@ class WebViewController: UIViewController,UINavigationBarDelegate,WKNavigationDe
         view.addSubview(webView)
         webView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 45),
+            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
+//            webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 45),
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             webView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+         
         
 //        let newView = UIView()
 //                self.view.addSubview(newView)
